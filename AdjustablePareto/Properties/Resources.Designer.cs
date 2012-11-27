@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AdjustablePareto.Properties {
+namespace SkewBoid.Properties {
     using System;
     
     
