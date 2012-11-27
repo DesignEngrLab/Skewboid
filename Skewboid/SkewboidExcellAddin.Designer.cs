@@ -9,13 +9,13 @@
 //------------------------------------------------------------------------------
 
 #pragma warning disable 414
-namespace SkewBoid {
+namespace Skewboid {
     
     
     /// 
     [Microsoft.VisualStudio.Tools.Applications.Runtime.StartupObjectAttribute(0)]
     [global::System.Security.Permissions.PermissionSetAttribute(global::System.Security.Permissions.SecurityAction.Demand, Name="FullTrust")]
-    public sealed partial class AdjustableParetoAddIn : Microsoft.Office.Tools.AddInBase {
+    public sealed partial class SkewboidAddIn : Microsoft.Office.Tools.AddInBase {
         
         internal Microsoft.Office.Tools.CustomTaskPaneCollection CustomTaskPanes;
         
@@ -30,7 +30,7 @@ namespace SkewBoid {
         /// 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public AdjustableParetoAddIn(global::Microsoft.Office.Tools.Excel.ApplicationFactory factory, global::System.IServiceProvider serviceProvider) : 
+        public SkewboidAddIn(global::Microsoft.Office.Tools.Excel.ApplicationFactory factory, global::System.IServiceProvider serviceProvider) : 
                 base(factory, serviceProvider, "AddIn", "ThisAddIn") {
             Globals.Factory = factory;
         }
@@ -42,7 +42,7 @@ namespace SkewBoid {
         protected override void Initialize() {
             base.Initialize();
             this.Application = this.GetHostItem<Microsoft.Office.Interop.Excel.Application>(typeof(Microsoft.Office.Interop.Excel.Application), "Application");
-            Globals.AdjustableParetoAddIn = this;
+            Globals.SkewboidAddIn = this;
             global::System.Windows.Forms.Application.EnableVisualStyles();
             this.InitializeCachedData();
             this.InitializeControls();
@@ -180,19 +180,19 @@ namespace SkewBoid {
         private Globals() {
         }
         
-        private static AdjustableParetoAddIn _AdjustableParetoAddIn;
+        private static SkewboidAddIn _skewboidAddIn;
         
         private static global::Microsoft.Office.Tools.Excel.ApplicationFactory _factory;
         
         private static ThisRibbonCollection _ThisRibbonCollection;
         
-        internal static AdjustableParetoAddIn AdjustableParetoAddIn {
+        internal static SkewboidAddIn SkewboidAddIn {
             get {
-                return _AdjustableParetoAddIn;
+                return _skewboidAddIn;
             }
             set {
-                if ((_AdjustableParetoAddIn == null)) {
-                    _AdjustableParetoAddIn = value;
+                if ((_skewboidAddIn == null)) {
+                    _skewboidAddIn = value;
                 }
                 else {
                     throw new System.NotSupportedException();

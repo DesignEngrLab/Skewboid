@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SkewBoid
+namespace Skewboid
 {
     internal static class ParetoFunctions
     {
@@ -16,7 +16,7 @@ namespace SkewBoid
         {
             initializeWeightsAndDirections(candidates, _weights, _optDirections);
             alpha = _alpha;
-            List<ICandidate> paretoSet = new List<ICandidate>();
+            var paretoSet = new List<ICandidate>();
             numObjectives = candidates[0].objectives.GetLength(0);
             alpha = _alpha;
             if (_weights != null) weights = (double[]) _weights.Clone();
@@ -48,7 +48,7 @@ namespace SkewBoid
         /// <param name="_weights">The _weights.</param>
         /// <param name="_optDirections">The _opt directions.</param>
         /// <returns></returns>
-        internal static List<ICandidate> FindGivenNumCandidates(List<ICandidate> candidates, int numKeep, out double alphaTarget,
+        public static List<ICandidate> FindGivenNumCandidates(List<ICandidate> candidates, int numKeep, out double alphaTarget,
                                                               double[] _weights, optimize[] _optDirections = null)
         {
             initializeWeightsAndDirections(candidates, _weights, _optDirections);

@@ -6,9 +6,9 @@ using Excel = Microsoft.Office.Interop.Excel;
 using Office = Microsoft.Office.Core;
 using Microsoft.Office.Tools.Excel;
 
-namespace SkewBoid
+namespace Skewboid
 {
-    public partial class AdjustableParetoAddIn
+    public partial class SkewboidAddIn
     {
         List<ICandidate> candidates = new List<ICandidate>();
 

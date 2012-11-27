@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 11
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdjustablePareto", "AdjustablePareto\AdjustablePareto.csproj", "{B5DFD119-FDAA-4E41-966F-A4FAF8F46228}"
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Skewboid", "Skewboid\Skewboid.csproj", "{B5DFD119-FDAA-4E41-966F-A4FAF8F46228}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
