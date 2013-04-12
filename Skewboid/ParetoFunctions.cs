@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Skewboid
 {
@@ -10,33 +11,6 @@ namespace Skewboid
         private static double[] weights;
         private static optimize[] optDirections;
         private const double tolerance = 0.0001; // tolerance
-
-        internal static List<ICandidate> FindParetoCandidates(List<ICandidate> candidates, double _alpha,
-                                                              double[] _weights, optimize[] _optDirections = null)
-        {
-            initializeWeightsAndDirections(candidates, _weights, _optDirections);
-            alpha = _alpha;
-            var paretoSet = new List<ICandidate>();
-            numObjectives = candidates[0].objectives.GetLength(0);
-            alpha = _alpha;
-            if (_weights != null) weights = (double[]) _weights.Clone();
-            else weights = null;
-            if (_optDirections == null)
-            {
-                optDirections = new optimize[numObjectives];
-                for (int i = 0; i < numObjectives; i++)
-                    optDirections[i] = optimize.minimize;
-            }
-            else optDirections = (optimize[]) _optDirections.Clone();
-            if (weights != null)
-                foreach (var c in candidates)
-                    UpdateParetoWithWeights(paretoSet, c);
-            else
-                foreach (var c in candidates)
-                    UpdatePareto(paretoSet, c);
-
-            return paretoSet;
-        }
 
 
         /// <summary>
@@ -54,7 +28,7 @@ namespace Skewboid
             initializeWeightsAndDirections(candidates, _weights, _optDirections);
             double alphaLB, alphaUB;
             int numatLB, numatUB;
-            var paretoSet = FindParetoCandidates(candidates, 0, weights);
+            var paretoSet = FindParetoCandidates(candidates, 0, weights, _optDirections);
             var numTarget = paretoSet.Count;
             if (numTarget == numKeep)
             {
@@ -80,7 +54,7 @@ namespace Skewboid
                 alphaLB = 0;
                 numatLB = numTarget;
                 alphaUB = 1;
-                paretoSet = FindParetoCandidates(candidates, alphaUB, weights);
+                paretoSet = FindParetoCandidates(candidates, alphaUB, weights, _optDirections);
                 numatUB = paretoSet.Count;
                 if (numatUB >= numKeep)
                 {
@@ -96,10 +70,10 @@ namespace Skewboid
             while (numKeep != numTarget && alphaUB - alphaLB > tolerance)
             {
                 k++;
-                alphaTarget = alphaLB + (alphaUB - alphaLB)*(numatLB - numKeep)/(numatLB - numatUB);
-                paretoSet = FindParetoCandidates(candidates, alphaTarget, weights);
+                alphaTarget = alphaLB + (alphaUB - alphaLB) * (numatLB - numKeep) / (numatLB - numatUB);
+                paretoSet = FindParetoCandidates(candidates, alphaTarget, weights, _optDirections);
                 numTarget = paretoSet.Count;
-                if (numTarget>numKeep)
+                if (numTarget > numKeep)
                 {
                     alphaLB = alphaTarget;
                     numatLB = numTarget;
@@ -114,9 +88,29 @@ namespace Skewboid
             return paretoSet;
         }
 
-        private static void initializeWeightsAndDirections(List<ICandidate> candidates, double[] _weights, optimize[] _optDirections)
+        internal static List<ICandidate> FindParetoCandidates(IEnumerable<ICandidate> candidates, double _alpha,
+                                                              double[] _weights, optimize[] _optDirections = null)
         {
-            numObjectives = candidates[0].objectives.GetLength(0);
+            initializeWeightsAndDirections(candidates, _weights, _optDirections);
+            return FindParetoCandidates(candidates, _alpha);
+        }
+        private static List<ICandidate> FindParetoCandidates(IEnumerable<ICandidate> candidates, double _alpha)
+        {
+            alpha = _alpha;
+            var paretoSet = new List<ICandidate>();
+            if (weights != null)
+                foreach (var c in candidates)
+                    UpdateParetoWithWeights(paretoSet, c);
+            else
+                foreach (var c in candidates)
+                    UpdateParetoDiversity(paretoSet, c);
+
+            return paretoSet;
+        }
+
+        private static void initializeWeightsAndDirections(IEnumerable<ICandidate> candidates, double[] _weights, optimize[] _optDirections)
+        {
+            numObjectives = candidates.First().objectives.GetLength(0);
             if (_weights != null) weights = (double[])_weights.Clone();
             else weights = null;
             if (_optDirections == null)
@@ -126,6 +120,19 @@ namespace Skewboid
                     optDirections[i] = optimize.minimize;
             }
             else optDirections = (optimize[])_optDirections.Clone();
+        }
+
+
+        private static void UpdateParetoDiversity(List<ICandidate> paretoSet, ICandidate c)
+        {
+            for (int i = paretoSet.Count - 1; i >= 0; i--)
+            {
+                var pc = paretoSet[i];
+                if (dominatesDiversity(c, pc))
+                    paretoSet.Remove(pc);
+                else if (dominatesDiversity(pc, c)) return;
+            }
+            paretoSet.Add(c);
         }
 
         private static void UpdateParetoWithWeights(List<ICandidate> paretoSet, ICandidate c)
@@ -148,6 +155,7 @@ namespace Skewboid
         /// <returns></returns>
         private static Boolean dominatesWithWeights(ICandidate c1, ICandidate c2)
         {
+            var Dominates = false;
             for (int i = 0; i < numObjectives; i++)
             {
                 double c1Value = 0.0, c2Value = 0.0;
@@ -155,32 +163,19 @@ namespace Skewboid
                 {
                     if (j == i)
                     {
-                        c1Value += weights[j]*c1.objectives[j];
-                        c2Value += weights[j]*c2.objectives[j];
+                        c1Value += (int)optDirections[j] * weights[j] * c1.objectives[j];
+                        c2Value += (int)optDirections[j] * weights[j] * c2.objectives[j];
                     }
                     else
                     {
-                        c1Value += alpha*weights[j]*c1.objectives[j];
-                        c2Value += alpha*weights[j]*c2.objectives[j];
+                        c1Value += (int)optDirections[j] * alpha * weights[j] * c1.objectives[j];
+                        c2Value += (int)optDirections[j] * alpha * weights[j] * c2.objectives[j];
                     }
                 }
-                if (((int) optDirections[i])*c1Value < ((int) optDirections[i])*c2Value)
-                    return false;
+                if (c1Value < c2Value) return false;
+                if (c1Value > c2Value) Dominates = true;
             }
-            return true;
-        }
-
-
-        private static void UpdatePareto(List<ICandidate> paretoSet, ICandidate c)
-        {
-            for (int i = paretoSet.Count - 1; i >= 0; i--)
-            {
-                var pc = paretoSet[i];
-                if (dominates(c, pc))
-                    paretoSet.Remove(pc);
-                else if (dominates(pc, c)) return;
-            }
-            paretoSet.Add(c);
+            return Dominates;
         }
 
         /// <summary>
@@ -189,21 +184,29 @@ namespace Skewboid
         /// <param name="c1">the subject candidate, c1 (does this dominate...).</param>
         /// <param name="c2">the object candidate, c2 (is dominated by).</param>
         /// <returns></returns>
-        private static Boolean dominates(ICandidate c1, ICandidate c2)
+        private static Boolean dominatesDiversity(ICandidate c1, ICandidate c2)
         {
+            var Dominates = false;
             for (int i = 0; i < numObjectives; i++)
             {
-                double c1Value = 0.0;
-                double c2Value = (numObjectives - 1)*alpha + 1;
+                double c1Value = 0.0, c2Value = 0.0;
                 for (int j = 0; j < numObjectives; j++)
                 {
-                    if (j == i) c1Value += c1.objectives[j]/c2.objectives[j];
-                    else c1Value += alpha*c1.objectives[j]/c2.objectives[j];
+                    if (j == i)
+                    {
+                        c1Value += (int)optDirections[j] * c1.objectives[j] / Math.Abs(c2.objectives[j]);
+                        c2Value += (int)optDirections[j] * Math.Sign(c2.objectives[j]);
+                    }
+                    else
+                    {
+                        c1Value += (int)optDirections[j] * alpha * c1.objectives[j] / Math.Abs(c2.objectives[j]);
+                        c2Value += (int)optDirections[j] * alpha * Math.Sign(c2.objectives[j]);
+                    }
                 }
-                if (((int) optDirections[i])*c1Value < ((int) optDirections[i])*c2Value)
-                    return false;
+                if (c1Value < c2Value) return false;
+                if (c1Value > c2Value) Dominates = true;
             }
-            return true;
+            return Dominates;
         }
     }
 

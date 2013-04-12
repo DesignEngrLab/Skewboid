@@ -5,8 +5,6 @@ using System.Text;
 
 namespace Skewboid
 {
-
-
     ///<summary>
     /// Enumerator for Search functions that have generality
     /// to either minimize or maximize (e.g. PNPPS, stochasticChoose). */
