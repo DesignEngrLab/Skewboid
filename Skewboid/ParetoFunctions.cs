@@ -28,7 +28,7 @@ namespace Skewboid
             initializeWeightsAndDirections(candidates, _weights, _optDirections);
             double alphaLB, alphaUB;
             int numatLB, numatUB;
-            var paretoSet = FindParetoCandidates(candidates, 0, weights, _optDirections);
+            var paretoSet = FindParetoCandidates(candidates, 0);
             var numTarget = paretoSet.Count;
             if (numTarget == numKeep)
             {
@@ -54,7 +54,7 @@ namespace Skewboid
                 alphaLB = 0;
                 numatLB = numTarget;
                 alphaUB = 1;
-                paretoSet = FindParetoCandidates(candidates, alphaUB, weights, _optDirections);
+                paretoSet = FindParetoCandidates(candidates, alphaUB);
                 numatUB = paretoSet.Count;
                 if (numatUB >= numKeep)
                 {
@@ -71,7 +71,7 @@ namespace Skewboid
             {
                 k++;
                 alphaTarget = alphaLB + (alphaUB - alphaLB) * (numatLB - numKeep) / (numatLB - numatUB);
-                paretoSet = FindParetoCandidates(candidates, alphaTarget, weights, _optDirections);
+                paretoSet = FindParetoCandidates(candidates, alphaTarget);
                 numTarget = paretoSet.Count;
                 if (numTarget > numKeep)
                 {
@@ -88,7 +88,7 @@ namespace Skewboid
             return paretoSet;
         }
 
-        internal static List<ICandidate> FindParetoCandidates(IEnumerable<ICandidate> candidates, double _alpha,
+        public static List<ICandidate> FindParetoCandidates(IEnumerable<ICandidate> candidates, double _alpha,
                                                               double[] _weights, optimize[] _optDirections = null)
         {
             initializeWeightsAndDirections(candidates, _weights, _optDirections);
