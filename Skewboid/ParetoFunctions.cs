@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using OptimizationToolbox;
 
 namespace Skewboid
 {
@@ -94,6 +95,35 @@ namespace Skewboid
             initializeWeightsAndDirections(candidates, _weights, _optDirections);
             return FindParetoCandidates(candidates, _alpha);
         }
+        /// <summary>
+        /// Finds the pareto candidates (no skewboid, no weights - the real deal).
+        /// </summary>
+        /// <param name="candidates">The candidates.</param>
+        /// <param name="_optDirections">The _opt directions.</param>
+        /// <returns></returns>
+        public static List<ICandidate> FindParetoCandidates(IEnumerable<ICandidate> candidates, optimize[] _optDirections = null)
+        {
+            var paretoSet = new List<ICandidate>();
+            foreach (var c in candidates)
+            {
+                var cIsDominated = false;         
+                for (int i = paretoSet.Count - 1; i >= 0; i--)
+                {
+                    var pc = paretoSet[i];
+                    if (dominates(c, pc))
+                        paretoSet.Remove(pc);
+                    else if (dominates(pc, c))
+                    {
+                        cIsDominated = true;
+                        break;
+                    }
+                }
+                if (!cIsDominated) paretoSet.Add(c);
+            }  
+            return paretoSet;
+        }
+
+
         private static List<ICandidate> FindParetoCandidates(IEnumerable<ICandidate> candidates, double _alpha)
         {
             alpha = _alpha;
@@ -107,6 +137,7 @@ namespace Skewboid
 
             return paretoSet;
         }
+
 
         private static void initializeWeightsAndDirections(IEnumerable<ICandidate> candidates, double[] _weights, optimize[] _optDirections)
         {
@@ -208,6 +239,22 @@ namespace Skewboid
             }
             return Dominates;
         }
+
+        /// <summary>
+        /// Dominateses the specified c1.
+        /// </summary>
+        /// <param name="c1">The c1.</param>
+        /// <param name="c2">The c2.</param>
+        /// <returns></returns>
+        private static Boolean dominates(ICandidate c1, ICandidate c2)
+        {
+            for (var i = 0; i < numObjectives; i++)
+                if (((int)optDirections[i]) * c1.objectives[i] <
+                    ((int)optDirections[i]) * c2.objectives[i])
+                    return false;
+            return true;
+        }
+
     }
 
 }
