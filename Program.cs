@@ -1,6 +1,5 @@
 ﻿using Skewboid;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -41,11 +40,11 @@ for (int i = 0; i < numCandidates; i++)
 double[] alphaArray = new double[numAlphas];
 for (int i = 0; i < numAlphas; i++)
 {
-    string[] objString = lines[i + 1+numCandidates].Split(',');
+    string[] objString = lines[i + 1 + numCandidates].Split(',');
     if (double.TryParse(objString[0], out var f))
     {
         alphaArray[i] = f;
-        List<ICandidate> paretoSet = ParetoFunctions.FindParetoCandidates(candidates, alphaArray[i], weights);
+        var paretoSet = ParetoFunctions.FindParetoCandidates(candidates, alphaArray[i], 1e-9, false);
     }
 }
 
