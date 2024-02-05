@@ -18,8 +18,9 @@ namespace Skewboid
         /// <param name="_weights">The _weights.</param>
         /// <param name="_optDirections">The _opt directions.</param>
         /// <returns></returns>
-        public static List<ICandidate> FindGivenNumCandidates(List<ICandidate> candidates, int numKeep, out double alphaTarget,
+        public static List<T> FindGivenNumCandidates<T>(List<T> candidates, int numKeep, out double alphaTarget,
                                                              IList<double> weights, IList<OptimizeDirection> optDirections = null)
+            where T : ICandidate
         {
             var numObjectives = candidates.First().Objectives.Count();
             if (optDirections == null)
@@ -96,7 +97,8 @@ namespace Skewboid
         /// <param name="candidates"></param>
         /// <param name="alpha"></param>
         /// <returns></returns>
-        public static List<ICandidate> FindParetoCandidates(IEnumerable<ICandidate> candidates, double alpha)
+        public static List<T> FindParetoCandidates<T>(IEnumerable<T> candidates, double alpha)
+            where T : ICandidate
         {
             var numObjectives = candidates.First().Objectives.Count();
             return FindParetoCandidates(candidates, alpha,
@@ -110,7 +112,8 @@ namespace Skewboid
         /// <param name="alpha"></param>
         /// <param name="optDirections"></param>
         /// <returns></returns>
-        public static List<ICandidate> FindParetoCandidates(IEnumerable<ICandidate> candidates, double alpha, IList<OptimizeDirection> optDirections)
+        public static List<T> FindParetoCandidates<T>(IEnumerable<T> candidates, double alpha, IList<OptimizeDirection> optDirections)
+            where T : ICandidate
         => FindParetoCandidates(candidates, alpha, optDirections, Enumerable.Repeat(1.0, optDirections.Count).ToArray());
 
         /// <summary>
@@ -120,13 +123,15 @@ namespace Skewboid
         /// <param name="alpha"></param>
         /// <param name="weights"></param>
         /// <returns></returns>
-        public static List<ICandidate> FindParetoCandidates(IEnumerable<ICandidate> candidates, double alpha, IList<double> weights)
+        public static List<T> FindParetoCandidates<T>(IEnumerable<T> candidates, double alpha, IList<double> weights)
+            where T : ICandidate
         => FindParetoCandidates(candidates, alpha, Enumerable.Repeat(OptimizeDirection.Minimize, weights.Count).ToArray(), weights);
 
 
-        public static List<ICandidate> FindParetoCandidates(IEnumerable<ICandidate> candidates, double alpha, IList<OptimizeDirection> optDirections, IList<double> weights)
+        public static List<T> FindParetoCandidates<T>(IEnumerable<T> candidates, double alpha, IList<OptimizeDirection> optDirections, IList<double> weights)
+            where T : ICandidate
         {
-            var paretoSet = new List<ICandidate>();
+            var paretoSet = new List<T>();
             if (weights != null)
                 foreach (var c in candidates)
                     UpdateParetoWithWeights(paretoSet, c, alpha, optDirections, weights);
@@ -143,9 +148,10 @@ namespace Skewboid
         /// <param name="candidates">The candidates.</param>
         /// <param name="_optDirections">The _opt directions.</param>
         /// <returns></returns>
-        public static List<ICandidate> FindParetoCandidates(IEnumerable<ICandidate> candidates, IList<OptimizeDirection> optDirections = null)
+        public static List<T> FindParetoCandidates<T>(IEnumerable<T> candidates, IList<OptimizeDirection> optDirections = null)
+            where T : ICandidate
         {
-            var paretoSet = new List<ICandidate>();
+            var paretoSet = new List<T>();
             foreach (var c in candidates)
             {
                 UpdatePareto(paretoSet, c, optDirections);
@@ -159,7 +165,8 @@ namespace Skewboid
         /// <param name="paretoSet"></param>
         /// <param name="c"></param>
         /// <param name="optDirections"></param>
-        public static bool UpdatePareto(List<ICandidate> paretoSet, ICandidate c, IList<OptimizeDirection> optDirections)
+        public static bool UpdatePareto<T>(List<T> paretoSet, T c, IList<OptimizeDirection> optDirections)
+            where T : ICandidate
         {
             for (int i = paretoSet.Count - 1; i >= 0; i--)
             {
@@ -181,7 +188,8 @@ namespace Skewboid
         /// <param name="alpha"></param>
         /// <param name="optDirections"></param>
         /// <returns></returns>
-        public static bool UpdateParetoDiversity(List<ICandidate> paretoSet, ICandidate c, double alpha, IList<OptimizeDirection> optDirections)
+        public static bool UpdateParetoDiversity<T>(List<T> paretoSet, T c, double alpha, IList<OptimizeDirection> optDirections)
+            where T : ICandidate
         {
             for (int i = paretoSet.Count - 1; i >= 0; i--)
             {
@@ -203,7 +211,8 @@ namespace Skewboid
         /// <param name="alpha"></param>
         /// <param name="optDirections"></param>
         /// <param name="weights"></param>
-        public static void UpdateParetoWithWeights(List<ICandidate> paretoSet, ICandidate c, double alpha, IList<OptimizeDirection> optDirections, IList<double> weights)
+        public static void UpdateParetoWithWeights<T>(List<T> paretoSet, T c, double alpha, IList<OptimizeDirection> optDirections, IList<double> weights)
+            where T : ICandidate
         {
             for (int i = paretoSet.Count - 1; i >= 0; i--)
             {
