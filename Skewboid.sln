@@ -1,7 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Skewboid", "Skewboid\Skewboid.csproj", "{0DCF02B2-82F0-41EF-9433-0D5665359F0E}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34511.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Skewboid", "Skewboid.csproj", "{00BDFF6A-AC8C-44E5-8E78-0BA9854F6E01}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,12 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0DCF02B2-82F0-41EF-9433-0D5665359F0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0DCF02B2-82F0-41EF-9433-0D5665359F0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0DCF02B2-82F0-41EF-9433-0D5665359F0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0DCF02B2-82F0-41EF-9433-0D5665359F0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00BDFF6A-AC8C-44E5-8E78-0BA9854F6E01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00BDFF6A-AC8C-44E5-8E78-0BA9854F6E01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00BDFF6A-AC8C-44E5-8E78-0BA9854F6E01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00BDFF6A-AC8C-44E5-8E78-0BA9854F6E01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6EC76BAD-1BA7-4DAF-B6BC-7122BB6B3BDA}
 	EndGlobalSection
 EndGlobal
