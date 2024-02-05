@@ -148,37 +148,62 @@ namespace Skewboid
             var paretoSet = new List<ICandidate>();
             foreach (var c in candidates)
             {
-                var cIsDominated = false;
-                for (int i = paretoSet.Count - 1; i >= 0; i--)
-                {
-                    var pc = paretoSet[i];
-                    if (Dominates(c, pc, optDirections))
-                        paretoSet.Remove(pc);
-                    else if (Dominates(pc, c, optDirections))
-                    {
-                        cIsDominated = true;
-                        break;
-                    }
-                }
-                if (!cIsDominated) paretoSet.Add(c);
+                UpdatePareto(paretoSet, c, optDirections);
             }
             return paretoSet;
         }
 
+        /// <summary>
+        /// Updates the pareto set with the given candidate. Returns true if the candidate is added to the pareto set.
+        /// </summary>
+        /// <param name="paretoSet"></param>
+        /// <param name="c"></param>
+        /// <param name="optDirections"></param>
+        public static bool UpdatePareto(List<ICandidate> paretoSet, ICandidate c, IList<OptimizeDirection> optDirections)
+        {
+            for (int i = paretoSet.Count - 1; i >= 0; i--)
+            {
+                var pc = paretoSet[i];
+                if (Dominates(c, pc, optDirections))
+                    paretoSet.Remove(pc);
+                else if (Dominates(pc, c, optDirections)) return false;
+            }
+            paretoSet.Add(c);
+            return true;
+        }
 
-        private static void UpdateParetoDiversity(List<ICandidate> paretoSet, ICandidate c, double alpha, IList<OptimizeDirection> optDirections)
+        /// <summary>
+        /// Updates the pareto set with the given candidate using a skewboid alpha and the diversity method. 
+        /// Returns true if the candidate is added to the pareto set.
+        /// </summary>
+        /// <param name="paretoSet"></param>
+        /// <param name="c"></param>
+        /// <param name="alpha"></param>
+        /// <param name="optDirections"></param>
+        /// <returns></returns>
+        public static bool UpdateParetoDiversity(List<ICandidate> paretoSet, ICandidate c, double alpha, IList<OptimizeDirection> optDirections)
         {
             for (int i = paretoSet.Count - 1; i >= 0; i--)
             {
                 var pc = paretoSet[i];
                 if (DominatesDiversity(c, pc, alpha, optDirections))
                     paretoSet.Remove(pc);
-                else if (DominatesDiversity(pc, c, alpha, optDirections)) return;
+                else if (DominatesDiversity(pc, c, alpha, optDirections)) return false;
             }
             paretoSet.Add(c);
+            return true;
         }
 
-        private static void UpdateParetoWithWeights(List<ICandidate> paretoSet, ICandidate c, double alpha, IList<OptimizeDirection> optDirections, IList<double> weights)
+        /// <summary>
+        /// Updates the pareto set with the given candidate using a skewboid alpha and with weights. 
+        /// Returns true if the candidate is added to the pareto set.
+        /// </summary>
+        /// <param name="paretoSet"></param>
+        /// <param name="c"></param>
+        /// <param name="alpha"></param>
+        /// <param name="optDirections"></param>
+        /// <param name="weights"></param>
+        public static void UpdateParetoWithWeights(List<ICandidate> paretoSet, ICandidate c, double alpha, IList<OptimizeDirection> optDirections, IList<double> weights)
         {
             for (int i = paretoSet.Count - 1; i >= 0; i--)
             {
