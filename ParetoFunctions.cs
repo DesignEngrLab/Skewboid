@@ -19,10 +19,11 @@ namespace Skewboid
         /// <param name="_optDirections">The _opt directions.</param>
         /// <returns></returns>
         public static List<T> FindGivenNumCandidates<T>(List<T> candidates, int numKeep, out double alphaTarget,
-            IList<double> weights, double tolerance, bool keepEquals, IList<OptimizeDirection> optDirections = null)
+            IList<double> weights, double tolerance, bool keepEquals, int numObjectives = -1, IList<OptimizeDirection> optDirections = null)
             where T : ICandidate
         {
-            var numObjectives = candidates.First().Objectives.Count();
+            if (numObjectives == -1)
+                numObjectives = candidates.First().Objectives.Count();
             if (optDirections == null)
             {
                 optDirections = new OptimizeDirection[numObjectives];
@@ -336,7 +337,6 @@ namespace Skewboid
                 {
                     var obj1 = c1Objectives[j];
                     var obj2 = c2Objectives[j];
-                    var weight = weights[j];
                     if (2 * Math.Abs(obj1 - obj2) < tolerance * (Math.Abs(obj1) + Math.Abs(obj2)))
                     {
                         equal &= true;
@@ -344,6 +344,7 @@ namespace Skewboid
                     }
                     else equal = false;
                     var dir = (int)optDirections[j];
+                    var weight = weights[j];
                     if (j == i)
                     {
                         c1Value += dir * weight * obj1;
@@ -435,7 +436,7 @@ namespace Skewboid
                 {
                     c1Dominates &= true; c2Dominates = false;
                 }
-                else
+                else //if (dir * obj1 < dir * obj2)
                 {
                     c2Dominates &= true; c1Dominates = false;
                 }
